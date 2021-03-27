@@ -7,7 +7,7 @@
 #ifndef ROPTLIB_F2C_INCLUDE
 #define ROPTLIB_F2C_INCLUDE
 
-typedef long int integer;
+typedef int integer;
 typedef unsigned long int uinteger;
 typedef char *address;
 typedef short int shortint;
