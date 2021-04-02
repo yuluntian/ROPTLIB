@@ -122,7 +122,7 @@ target_include_directories(roptlib PUBLIC
 )
 
 target_link_libraries(roptlib ${LAPACK} ${BLAS} ${M})
-
+set_target_properties(roptlib PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 if(${CODE_PROFILING})
 	set_target_properties(roptlib PROPERTIES COMPILE_FLAGS "-pg -g" LINK_FLAGS "-pg -g")
