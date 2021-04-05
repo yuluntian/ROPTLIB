@@ -9,3 +9,13 @@ f(x), x \in \mathcal{M},
 where \mathcal{M} is a Riemannian manifold.
 
 The detalied instruction and user manual can be found at http://www.math.fsu.edu/~whuang2/Indices/index_ROPTLIB.html.
+
+## Installation
+To install via cmake: 
+
+```
+mkdir build
+cd build
+cmake ../
+sudo make install
+```
