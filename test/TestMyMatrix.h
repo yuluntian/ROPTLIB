@@ -24,6 +24,10 @@ This is the test file to test the wrapper functions, of lapack and blas, in MyMa
 
 using namespace ROPTLIB;
 
+#if !defined(MATLAB_MEX_FILE) && defined(TESTMYMATRIX)
+int main(void);
+#endif
+
 void testEigenSymmetricM(void);
 void testExpSymmetricM(void);
 void testLogSymmetricM(void);

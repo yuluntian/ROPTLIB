@@ -13,6 +13,8 @@ This is the test file to run the problem defined in DriverElasticCurvesRO.h and 
 
 using namespace ROPTLIB;
 
-void testElasticCurvesRO(void);
+#if !defined(MATLAB_MEX_FILE) && defined(TESTELASTICCURVESRO)
+int main(void);
+#endif
 
 #endif // end of TESTELASTICCURVESRO_H

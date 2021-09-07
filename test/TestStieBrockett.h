@@ -22,14 +22,12 @@ This is the test file for the Brocokett problem defined in StieBrockett.h and St
 /*Problem related classes*/
 #include "Problems/Problem.h"
 #include "Problems/StieBrockett/StieBrockett.h"
-#include "Problems/SphereTxRQ/SphereTxRQ.h"
 
 /*Manifold related classes*/
 #include "Manifolds/Manifold.h"
 #include "Manifolds/Stiefel/StieVector.h"
 #include "Manifolds/Stiefel/StieVariable.h"
 #include "Manifolds/Stiefel/Stiefel.h"
-#include "Manifolds/SphereTx/SphereTx.h"
 
 /*Linesearch based solvers*/
 #include "Solvers/SolversLS.h"
@@ -54,9 +52,11 @@ This is the test file for the Brocokett problem defined in StieBrockett.h and St
 
 using namespace ROPTLIB;
 
+#if !defined(MATLAB_MEX_FILE) && defined(TESTSTIEBROCKETT)
+int main(void);
+#endif
+
 /*The main test function*/
-void testStieBrockettMore(void);
-void testStieBrockett(void);
 void testStieBrockett(double *B, double *D, integer n, integer p, double *X = nullptr, double *Xopt = nullptr);
 
 #endif // end of TESTSTIEBROCKETT_H

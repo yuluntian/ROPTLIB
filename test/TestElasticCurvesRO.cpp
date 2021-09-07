@@ -3,7 +3,9 @@
 
 using namespace ROPTLIB;
 
-void testElasticCurvesRO(void)
+#if !defined(MATLAB_MEX_FILE) && defined(TESTELASTICCURVESRO)
+
+int main(void)
 {
 	std::ifstream fdata;
 	fdata.open("Curves1020");
@@ -22,6 +24,11 @@ void testElasticCurvesRO(void)
 			}
 		}
 	}
+	// choose a random seed
+	unsigned tt = (unsigned)time(NULL);
+	tt = 1425718285;
+	printf("rand seed:%ud\n", tt);//--
+	genrandseed(tt);
 	integer idx1 = static_cast<integer> (floor(genrandreal() * 1020)), idx2 = static_cast<integer> (floor(genrandreal() * 1020));
 	//idx1 = 0;
 	//idx2 = 2;
@@ -84,8 +91,16 @@ void testElasticCurvesRO(void)
 	delete OGV;
 	delete EucV;
 	delete Xopt;
+
+#ifdef _WIN64
+#ifdef _DEBUG
+	_CrtDumpMemoryLeaks();
+#endif
+#endif
+	return 0;
 };
 
+#endif
 
 #ifdef MATLAB_MEX_FILE
 

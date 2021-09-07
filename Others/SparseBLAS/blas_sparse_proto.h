@@ -3,7 +3,6 @@
 
 typedef int blas_sparse_matrix;
 
-#include "Others/def.h"
 
   /* Level 1 Computational Routines */
 

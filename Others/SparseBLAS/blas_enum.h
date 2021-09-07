@@ -1,7 +1,6 @@
 #ifndef BLAS_ENUM_H
 #define BLAS_ENUM_H
 
-#include "Others/def.h"
   /* Enumerated types */
 
 enum blas_order_type {

@@ -23,7 +23,7 @@ namespace ROPTLIB{
 	TR_SCON: Teminate when the theta variable takes effect, which indicate the convergence rate is superlinear.
 	TR_MAXITER: Teminate when the inner iterations reach the maximum inner iterations specified by the member variable "Max_Inner_Iter"
 	*/
-	enum tCGstatusSet{ TR_NEGCURVTURE, TR_EXCREGION, L_TR_MIN, TR_LCON, TR_SCON, TR_MAXITER, TCGSTATUSSETLENGTH };
+	enum tCGstatusSet{ TR_NEGCURVTURE, TR_EXCREGION, TR_LCON, TR_SCON, TR_MAXITER, TCGSTATUSSETLENGTH };
 
 	class SolversTR : public QuasiNewton{
 	public:
@@ -36,8 +36,6 @@ namespace ROPTLIB{
 		/*PARAMSMAP is defined in "def.h" and it is a map from string to double, i.e., std::map<std::string, double> .
 		This function is used to set the parameters by the mapping*/
 		virtual void SetParams(PARAMSMAP params);
-
-		bool latestStepAccepted() {return latestStepAccepted_; }
 
 		/* ===============public parameters below================= */
 
@@ -129,6 +127,7 @@ namespace ROPTLIB{
 		integer innerIter;	/*The number of inner iterations for solving the local model.*/
 		tCGstatusSet tCGstatus; /*The status of solving the local model*/
 		std::string *tCGstatusSetnames;	/*This string array is to store the trust region status names*/
+
 		bool latestStepAccepted_ = false;
 	};
 }; /*end of ROPTLIB namespace*/

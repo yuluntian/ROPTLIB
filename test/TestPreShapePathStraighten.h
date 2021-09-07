@@ -46,7 +46,11 @@
 
 using namespace ROPTLIB;
 
-void testPreShapePathStraighten(void);
+#if !defined(MATLAB_MEX_FILE) && defined(TESTPRESHAPEPATHSTRAIGHTEN)
+int main(void);
+#endif
+
+void testPreShapePathStraighten();
 
 
 #endif /* TestPreShapePathStraighten_h */

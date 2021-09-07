@@ -42,7 +42,10 @@ This is the test file to run the problem defined in EucFrechetMean.h and EucFrec
 
 using namespace ROPTLIB;
 
-void testEucFrechetMean(void);
+#if !defined(MATLAB_MEX_FILE) && defined(TESTEUCFRECHETMEAN)
+int main(void);
+#endif
+
 void testEucFrechetMean(double *Data, double *Weight, integer num, integer dim, double *X = nullptr, double *Xopt = nullptr);
 
 #endif // end of TESTEUCFRECHETMEAN_H

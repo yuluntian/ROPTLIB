@@ -9,7 +9,23 @@
 #include "test/TestShapePathStraighten.h"
 using namespace ROPTLIB;
 
-void testShapePathStraighten(void)
+//#define MATLAB_MEX_FILE //djkfksldj
+
+
+#if !defined(MATLAB_MEX_FILE) && defined(TESTSHAPEPATHSTRAIGHTEN)
+
+int main(void)
+{
+    testShapePathStraighten();
+#ifdef _WIN64
+#ifdef _DEBUG
+	_CrtDumpMemoryLeaks();
+#endif
+#endif
+    return 0;
+}
+
+void testShapePathStraighten()
 {
     //generate q_1 q_2
     integer numP = 101, dim = 2, numC = 11;
@@ -21,9 +37,6 @@ void testShapePathStraighten(void)
     std::ifstream infile("Data_new.txt");
     if (! infile) {
         std::cout << "File did not open"<<std::endl;
-		delete[] q1;
-		delete[] q2;
-		return;
     }
     else
     {
@@ -162,6 +175,8 @@ void testShapePathStraighten(void)
     delete Xinitial;
     
 }
+
+#endif
 
 #ifdef MATLAB_MEX_FILE
 

@@ -121,7 +121,7 @@ namespace ROPTLIB{
 		}
 	};
 
-	void Manifold::Retraction(Variable *x, Vector *etax, Variable *result, double instepsize) const
+	void Manifold::Retraction(Variable *x, Vector *etax, Variable *result) const
 	{
 		const double *v = etax->ObtainReadData();
 		const double *xM = x->ObtainReadData();
@@ -134,6 +134,11 @@ namespace ROPTLIB{
 			dcopy_(&N, const_cast<double *> (xM), &inc, resultM, &inc);
 		// resultM <- v + resultTV, details: http://www.netlib.org/lapack/explore-html/d9/dcd/daxpy_8f.html
 		daxpy_(&N, &one, const_cast<double *> (v), &inc, resultM, &inc);
+	};
+
+	void Manifold::Retraction(Variable *x, Vector *etax, Variable *result, double instepsize) const
+	{
+		Retraction(x, etax, result);
 	};
 
 	void Manifold::coTangentVector(Variable *x, Vector *etax, Variable *y, Vector *xiy, Vector *result) const
@@ -468,12 +473,12 @@ namespace ROPTLIB{
 		{
 			Vector *inetax = EMPTYINTR->ConstructEmpty();
 			ObtainIntr(x, etax, inetax);
-			Retraction(x, inetax, y, 1);
+			Retraction(x, inetax, y);
 			delete inetax;
 		}
 		else
 		{
-			Retraction(x, etax, y, 1);
+			Retraction(x, etax, y);
 		}
 		VectorMinusVector(x, y, x, FDetax);
 		ScaleTimesVector(x, 1.0 / eps, FDetax, FDetax);
@@ -513,7 +518,7 @@ namespace ROPTLIB{
 			Vector *inzetax = EMPTYINTR->ConstructEmpty();
 			ObtainIntr(x, etax, inetax);
 			ObtainIntr(x, xix, inxix);
-			Retraction(x, inetax, y, 1);
+			Retraction(x, inetax, y);
 			DiffRetraction(x, inetax, y, inxix, inzetax, IsEtaXiSameDir);
 			ObtainExtr(y, inzetax, zetax);
 			delete inetax;
@@ -522,7 +527,7 @@ namespace ROPTLIB{
 		}
 		else
 		{
-			Retraction(x, etax, y, 1);
+			Retraction(x, etax, y);
 			DiffRetraction(x, etax, y, xix, zetax, IsEtaXiSameDir);
 		}
 		y->Print("y:");
@@ -534,12 +539,12 @@ namespace ROPTLIB{
 		{
 			Vector *inetax = EMPTYINTR->ConstructEmpty();
 			ObtainIntr(x, etax, inetax);
-			Retraction(x, inetax, yeps, 1);
+			Retraction(x, inetax, yeps);
 			delete inetax;
 		}
 		else
 		{
-			Retraction(x, etax, yeps, 1);
+			Retraction(x, etax, yeps);
 		}
 		VectorMinusVector(x, yeps, y, zetax);
 		ScaleTimesVector(x, 1.0 / eps, zetax, zetax);
@@ -572,7 +577,7 @@ namespace ROPTLIB{
 			Vector *inzetax = EMPTYINTR->ConstructEmpty();
 			ObtainIntr(x, etax, inetax);
 			ObtainIntr(x, xix, inxix);
-			Retraction(x, inetax, y, 1);
+			Retraction(x, inetax, y);
 			DiffRetraction(x, inetax, y, inxix, inzetax, true);
 			if (inetax->TempDataExist("beta"))
 			{
@@ -598,7 +603,7 @@ namespace ROPTLIB{
 		}
 		else
 		{
-			Retraction(x, etax, y, 1);
+			Retraction(x, etax, y);
 			DiffRetraction(x, etax, y, xix, zetax, true);
 			if (etax->TempDataExist("beta"))
 			{
@@ -650,7 +655,7 @@ namespace ROPTLIB{
 			Vector *inzetax = EMPTYINTR->ConstructEmpty();
 			ObtainIntr(x, etax, inetax);
 			ObtainIntr(x, xix, inxix);
-			Retraction(x, inetax, y, 1);
+			Retraction(x, inetax, y);
 			DiffRetraction(x, inetax, y, inxix, inzetay, false);
 			ObtainExtr(y, inzetay, zetay);
 
@@ -670,7 +675,7 @@ namespace ROPTLIB{
 		}
 		else
 		{
-			Retraction(x, etax, y, 1);
+			Retraction(x, etax, y);
 			DiffRetraction(x, etax, y, xix, zetay, false);
 			xiy->RandGaussian();
 			ExtrProjection(y, xiy, xiy);
@@ -711,7 +716,7 @@ namespace ROPTLIB{
 			Vector *inzetay = EMPTYINTR->ConstructEmpty();
 			ObtainIntr(x, etax, inetax);
 			ObtainIntr(x, xix, inxix);
-			Retraction(x, inetax, y, 1);
+			Retraction(x, inetax, y);
 			VectorTransport(x, inetax, y, inxix, inzetay);
 			printf("Before vector transport:%g, After vector transport:%g\n", Metric(x, inxix, inxix), Metric(y, inzetay, inzetay));
 			delete inetax;
@@ -720,7 +725,7 @@ namespace ROPTLIB{
 		}
 		else
 		{
-			Retraction(x, etax, y, 1);
+			Retraction(x, etax, y);
 			VectorTransport(x, etax, y, xix, zetay);
 			y->Print("y:");
 			zetay->Print("zetay:");
@@ -752,7 +757,7 @@ namespace ROPTLIB{
 			Vector *inxix = EMPTYINTR->ConstructEmpty();
 			Vector *inzetay = EMPTYINTR->ConstructEmpty();
 			ObtainIntr(x, etax, inetax);
-			Retraction(x, inetax, y, 1);
+			Retraction(x, inetax, y);
 			zetay->RandGaussian();
 			ExtrProjection(y, zetay, zetay);
 			ScaleTimesVector(y, sqrt(Metric(y, zetay, zetay)), zetay, zetay);
@@ -766,7 +771,7 @@ namespace ROPTLIB{
 		}
 		else
 		{
-			Retraction(x, etax, y, 1);
+			Retraction(x, etax, y);
 			zetay->RandGaussian();
 			ExtrProjection(y, zetay, zetay);
 			InverseVectorTransport(x, etax, y, zetay, xix);
@@ -802,7 +807,7 @@ namespace ROPTLIB{
 			Vector *inxix = EMPTYINTR->ConstructEmpty();
 			Vector *inzetay = EMPTYINTR->ConstructEmpty();
 			ObtainIntr(x, etax, inetax);
-			Retraction(x, inetax, y, 1);
+			Retraction(x, inetax, y);
 			ObtainIntr(x, xix, inxix);
 			xix->Print("xix:");
 			VectorTransport(x, inetax, y, inxix, inzetay);
@@ -816,7 +821,7 @@ namespace ROPTLIB{
 		}
 		else
 		{
-			Retraction(x, etax, y, 1);
+			Retraction(x, etax, y);
 			xix->Print("xix:");
 			VectorTransport(x, etax, y, xix, zetay);
 			InverseVectorTransport(x, etax, y, zetay, xix);
@@ -845,7 +850,7 @@ namespace ROPTLIB{
 		{
 			Vector *inetax = EMPTYINTR->ConstructEmpty();
 			ObtainIntr(x, etax, inetax);
-			Retraction(x, inetax, y, 1);
+			Retraction(x, inetax, y);
 			Hx = new LinearOPE(EMPTYINTR->Getlength());
 			Hx->ScaledIdOPE();
 			Hx->Print("Hx before:");
@@ -861,7 +866,7 @@ namespace ROPTLIB{
 			Hx->ScaledIdOPE();
 			Hx->Print("Hx before:");
 			result = new LinearOPE(EMPTYEXTR->Getlength());
-			Retraction(x, etax, y, 1);
+			Retraction(x, etax, y);
 			Vector *zetay1 = EMPTYEXTR->ConstructEmpty();
 			Vector *zetay2 = EMPTYEXTR->ConstructEmpty();
 			zetay1->RandGaussian();

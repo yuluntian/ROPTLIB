@@ -10,12 +10,21 @@
 
 using namespace ROPTLIB;
 
-double PreShapePathStraightenLinesearchInput(integer iter, Variable *x1, Vector *eta1, double initialstepsize, double initialslope, const Problem *prob, const Solvers *solver)
+#if !defined(MATLAB_MEX_FILE) && defined(TESTPRESHAPEPATHSTRAIGHTEN)
+
+
+int main(void)
+{
+    testPreShapePathStraighten();
+    return 0;
+}
+
+double LinesearchInput(integer iter, Variable *x1, Vector *eta1, double initialstepsize, double initialslope, const Problem *prob, const Solvers *solver)
 {
     return 1;
 }
 
-void testPreShapePathStraighten(void)
+void testPreShapePathStraighten()
 {
     //generate q_1 q_2
     integer numP = 101, dim = 2, numC = 11;
@@ -24,11 +33,9 @@ void testPreShapePathStraighten(void)
     
 
 //****************************READ C1 C2*******************************
-    std::ifstream infile("Data_new.txt");
+    std::ifstream infile("D:/Data.txt");
     if (! infile) {
         printf("File did not open\n");
-		delete[]q1;
-		delete[]q2;
 		return;
 
     }
@@ -81,7 +88,7 @@ void testPreShapePathStraighten(void)
      //RSDsolver->LineSearch_LS = static_cast<LSAlgo> (i);
      RSDsolver->Debug= ITERRESULT;
      RSDsolver->LineSearch_LS = INPUTFUN;
-     RSDsolver->LinesearchInput = &PreShapePathStraightenLinesearchInput;
+     RSDsolver->LinesearchInput = &LinesearchInput;
      RSDsolver->Max_Iteration = 10;
      RSDsolver->Stop_Criterion = GRAD_F;
     RSDsolver->Tolerance = 1e-10;
@@ -90,7 +97,7 @@ void testPreShapePathStraighten(void)
      delete RSDsolver;
     
     //******************************************OUTPUT*******************************************
-    std::ofstream outfile("TestData.txt");
+    std::ofstream outfile("D:\StudyFiles\Research\Codes\c++ research\GROPT_C\GROPT_C\GROPT_C\TestData.txt");
     for (integer j = 0; j < dim; j++) {
         for (integer i = 0; i < numP; i++) {
             outfile << q1[i+j*numP] << " ";
@@ -105,6 +112,11 @@ void testPreShapePathStraighten(void)
         outfile << std::endl << std::endl;
     }
 
+    
+    printf("testtest\n");
+    
     delete [] q1;
     delete [] q2;
 }
+
+#endif

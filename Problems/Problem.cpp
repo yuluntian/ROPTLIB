@@ -25,10 +25,10 @@ namespace ROPTLIB{
 		Vector *Hv = etax->ConstructEmpty();
         Variable *y = x->ConstructEmpty();
         fx = f(x);
-		printf("f:%f\n", fx);
 		Grad(x, gfx);
         //gfx->Print("gfx:");//---
 		gfx->CopyTo(etax);//--
+
 		//double *etaxTV = etax->ObtainWriteEntireData();///---
 		//integer nnn = etax->Getlength();
 		//for (integer i = 0; i < nnn; i++)//--
@@ -48,10 +48,9 @@ namespace ROPTLIB{
 		length = 35;
 		X = new double[length * 2]; 
 		Y = X + length;
-        
 		for (integer i = 0; i < length; i++)
 		{
-			Domain->Retraction(x, xi, y, 1);
+			Domain->Retraction(x, xi, y, 0);
 			fy = f(y);
 			//y->Print("y:");//----
 			HessianEta(x, xi, Hv);
@@ -130,6 +129,12 @@ namespace ROPTLIB{
 		Domain->ObtainIntr(x, exxix, xix);
 		delete exxix;
 		delete exetax;
+	}
+
+	void Problem::PreConditioner(Element *x, Element *inVec, Element *outVec) const
+	{
+		// default one means no preconditioner.
+		inVec->CopyTo(outVec);
 	};
 
 	void Problem::RieGrad(Variable *x, Vector *gf) const
@@ -189,12 +194,6 @@ namespace ROPTLIB{
 
 		delete y;
 		delete gfy;
-	};
-
-	void Problem::PreConditioner(Variable *x, Vector *eta, Vector *result) const
-	{
-		// default one means no preconditioner.
-		eta->CopyTo(result);
 	};
 
 	void Problem::SetDomain(Manifold *inDomain)

@@ -47,6 +47,7 @@ namespace ROPTLIB{
         Domain = new ProductManifold(numofmanis, ll, numofmani1, OO, numofmani2, mm, numofmani3);
         
         ProductElement *Xinitial = new ProductElement(numofmanis, llv, numofmani1, OOv, numofmani2, mmv, numofmani3);
+        
         //Xinitial->RandInManifold();
         double *lOm = Xinitial->ObtainWriteEntireData();
         for (integer i = 0; i < numP; i++) {
@@ -113,14 +114,6 @@ namespace ROPTLIB{
         delete RSDsolver;
         delete LRBFGSsolver;
 
-		delete ll;
-		delete OO;
-		delete mm;
-		delete llv;
-		delete OOv;
-		delete mmv;
-		delete Domain;
-		delete Xinitial;
     }
 
     double KarcherMean::f(Variable *x) const

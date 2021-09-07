@@ -33,7 +33,7 @@ namespace ROPTLIB{
 		{
 			InitialVector(); // Obtain initial guess, eta1, for local model
 			tCG_TR(); // obtain eta2
-			Mani->Retraction(x1, eta2, x2, Delta);	nR++;
+			Mani->Retraction(x1, eta2, x2);	nR++;
 			f2 = Prob->f(x2); nf++;
 			HessianEta(eta2, zeta); nH++; // Hessian * eta2
 
@@ -69,7 +69,7 @@ namespace ROPTLIB{
 			}
 			if (rho > Acceptence_Rho || (fabs(f1 - f2) / (fabs(f1) + 1) < sqeps && f2 < f1))
 			{
-				Acceptence(); // Algorithm specific operations
+			    Acceptence(); // Algorithm specific operations
 				ngf = sqrt(Mani->Metric(x2, gf2, gf2));
 				isstop = IsStopped(); /*This is done when the candidate is accepted. This is necessary for partly smooth stopping criterion*/
 				xTemp = x1; x1 = x2; x2 = xTemp;
@@ -77,7 +77,8 @@ namespace ROPTLIB{
 				iter++;
 				if (Debug >= ITERRESULT && iter % OutputGap == 0)
 				{
-					PrintGenInfo();
+                    printf("X_{%d} WAS ACCEPTED. Rho: %f, Acceptance_Rho: %f\n", iter, rho, Acceptence_Rho);
+                    PrintGenInfo();
 					PrintInfo(); // Output information specific to Algorithms
 				}
 				f1 = f2;
@@ -92,7 +93,7 @@ namespace ROPTLIB{
 					PrintGenInfo();
 					PrintInfo(); // Output information specific to Algorithms
 				}
-				latestStepAccepted_ = false;
+                latestStepAccepted_ = false;
 			}
 
 			if (Debug >= ITERRESULT)
@@ -222,7 +223,8 @@ namespace ROPTLIB{
 
 	void SolversTR::PreConditioner(Variable *x, Vector *eta, Vector *result)
 	{
-		Prob->PreConditioner(x, eta, result);
+		// default one means no preconditioner.
+		eta->CopyTo(result);
 	};
 
 	void SolversTR::PrintGenInfo(void)
@@ -255,7 +257,7 @@ namespace ROPTLIB{
 		status = (Min_Inner_Iter >= 0 && Min_Inner_Iter <= Max_Inner_Iter) ? YES : NO;
 		printf("Min_Inner_Iter:%15d[%s],\t", Min_Inner_Iter, status);
 		status = (Max_Inner_Iter >= 0 && Max_Inner_Iter >= Min_Inner_Iter) ? YES : NO;
-		printf("Max_Inner_Iter:%15d[%s],\n", Max_Inner_Iter, status);
+		printf("Max_Inner_Iter:%15d[%s],\t", Max_Inner_Iter, status);
 		status = (theta >= 0) ? YES : NO;
 		printf("theta         :%15g[%s],\t", theta, status);
 		status = (kappa > 0 && kappa < 1) ? YES : NO;
@@ -306,7 +308,6 @@ namespace ROPTLIB{
 		tCGstatusSetnames = new std::string[TCGSTATUSSETLENGTH];
 		tCGstatusSetnames[TR_NEGCURVTURE].assign("NEGCURVTURE");
 		tCGstatusSetnames[TR_EXCREGION].assign("EXCREGION");
-		tCGstatusSetnames[L_TR_MIN].assign("L_TR_MIN");
 		tCGstatusSetnames[TR_LCON].assign("LCON");
 		tCGstatusSetnames[TR_SCON].assign("SCON");
 		tCGstatusSetnames[TR_MAXITER].assign("MAXITER");

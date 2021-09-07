@@ -51,6 +51,10 @@
 
 using namespace ROPTLIB;
 
-void testKarcherMean(void);
+#if !defined(MATLAB_MEX_FILE) && defined(TESTKARCHERMEAN)
+int main(void);
+#endif
+
+void testKarcherMean();
 
 #endif /* TestKarcherMean_h */

@@ -115,18 +115,18 @@ namespace ROPTLIB{
 			ExtrProjection(x, v, result);
 	};
 
-	void CpxNStQOrth::Retraction(Variable *x, Vector *etax, Variable *result, double stepsize) const
+	void CpxNStQOrth::Retraction(Variable *x, Vector *etax, Variable *result) const
 	{
 		if (IsIntrApproach)
 		{
 			Vector *exetax = EMPTYEXTR->ConstructEmpty();
 			ObtainExtr(x, etax, exetax);
-			Manifold::Retraction(x, exetax, result, 1);
+			Manifold::Retraction(x, exetax, result);
 			delete exetax;
 		}
 		else
 		{
-			Manifold::Retraction(x, etax, result, 1);
+			Manifold::Retraction(x, etax, result);
 		}
 	};
 
@@ -153,7 +153,7 @@ namespace ROPTLIB{
 	};
 
 
-	void CpxNStQOrth::ComputeHHR(Variable *x)
+	void CpxNStQOrth::ComputeHHR(Variable *x) const
 	{
 		const double *xM = x->ObtainReadData();
 		SharedSpace *HouseHolderResult = new SharedSpace(2, x->Getsize()[0], x->Getsize()[1]);
@@ -431,7 +431,6 @@ namespace ROPTLIB{
 		/*solve linear system L^H M = r_T, the solution M is stored in r_T*/
 		ztrtrs_(GLOBAL::L, GLOBAL::C, GLOBAL::N, &P, &N, L, &P, r_T, &P, &info);
 #else
-		ztrtrs_(GLOBAL::L, GLOBAL::C, GLOBAL::N, &P, &N, (double *) L, &P, (double *) r_T, &P, &info);
 #endif
 		/*resultTV <-  r_T transpose conjugate*/
 		for (integer i = 0; i < n; i++)

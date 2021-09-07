@@ -60,7 +60,7 @@ namespace ROPTLIB{
 		scalarVectorAddVector(x, -nume, x, v, result);
 	};
 
-	void L2Sphere::Retraction(Variable *x, Vector *etax, Variable *result, double stepsize) const
+	void L2Sphere::Retraction(Variable *x, Vector *etax, Variable *result) const
 	{// exponential mapping
 		double norm = sqrt(Metric(x, etax, etax));
 		if (norm < std::numeric_limits<double>::epsilon())
@@ -311,7 +311,7 @@ namespace ROPTLIB{
 		const double *xptr = x->ObtainReadData();
 		Variable *xcubed = x->ConstructEmpty();
 		SharedSpace *Sharedxcubed = new SharedSpace(xcubed);
-		double *xcubedptr = xcubed->ObtainWriteEntireData(); /*WHTODO, check if this is correct. It may be for L4sphere not L2sphere...*/
+		double *xcubedptr = xcubed->ObtainWriteEntireData();
 		for (integer i = 0; i < n; i++)
 		{
 			xcubedptr[i] = xptr[i] * xptr[i] * xptr[i];

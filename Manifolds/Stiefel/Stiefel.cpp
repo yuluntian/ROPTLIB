@@ -82,18 +82,6 @@ namespace ROPTLIB{
 		HasLockCon = false;
 	};
 
-	// Choose the parameters
-	void Stiefel::ChooseStieParamsSet5(void)
-	{
-		metric = EUCLIDEAN;
-		retraction = POLAR;
-		VecTran = PARALLELIZATION;
-		IsIntrApproach = true;
-		UpdBetaAlone = false;
-		HasHHR = false;
-		HasLockCon = false;
-	};
-
 	void Stiefel::CheckParams(void) const
 	{
 		std::string StieMetricnames[STIEMETRICLENGTH] = { "EUCLIDEAN", "CANONICAL" };
@@ -160,19 +148,16 @@ namespace ROPTLIB{
 			ExtrProjection(x, v, result);
 	};
 
-	void Stiefel::Retraction(Variable *x, Vector *etax, Variable *result, double stepsize) const
+	void Stiefel::Retraction(Variable *x, Vector *etax, Variable *result) const
 	{
 		if (retraction == QF)
-			return qfRetraction(x, etax, result, stepsize);
-
-		if (retraction == POLAR)
-			return PolarRetraction(x, etax, result, stepsize);
+			return qfRetraction(x, etax, result);
 
 		if (retraction == CONSTRUCTED)
-			return ConRetraction(x, etax, result, stepsize);
+			return ConRetraction(x, etax, result);
 
 		if (retraction == CAYLEYR)
-			return CayleyRetraction(x, etax, result, stepsize);
+			return CayleyRetraction(x, etax, result);
 
 		printf("Error: Retraction has not been done!\n");
 	};
@@ -181,9 +166,6 @@ namespace ROPTLIB{
 	{
 		if (retraction == QF)
 			return qfcoTangentVector(x, etax, y, xiy, result);
-
-		if (retraction == POLAR)
-			return PolarcoTangentVector(x, etax, y, xiy, result);
 
 		if (retraction == CONSTRUCTED)
 			return ConcoTangentVector(x, etax, y, xiy, result);
@@ -198,9 +180,6 @@ namespace ROPTLIB{
 	{
 		if (retraction == QF)
 			return DiffqfRetraction(x, etax, y, xix, result, IsEtaXiSameDir);
-
-		if (retraction == POLAR)
-			return DiffPolarRetraction(x, etax, y, xix, result, IsEtaXiSameDir);
 
 		if (retraction == CONSTRUCTED)
 			return DiffConRetraction(x, etax, y, xix, result, IsEtaXiSameDir);
@@ -220,7 +199,7 @@ namespace ROPTLIB{
 		{ /*In case that beta is not computed, then compute it.*/
 			Variable *y = x->ConstructEmpty();
 			Vector *xiy = etax->ConstructEmpty();
-			Retraction(x, etax, y, 1);
+			Retraction(x, etax, y);
 			DiffRetraction(x, etax, y, etax, xiy, true);
 			delete y;
 			delete xiy;
@@ -413,7 +392,7 @@ namespace ROPTLIB{
 
 	void Stiefel::ObtainIntr(Variable *x, Vector *etax, Vector *result) const
 	{
-		if (retraction == QF || retraction == PROXSTIE || retraction == POLAR)
+		if (retraction == QF || retraction == PROXSTIE)
 			ObtainIntrHHR(x, etax, result);
 		else
 			if (retraction == CONSTRUCTED)
@@ -424,7 +403,7 @@ namespace ROPTLIB{
 
 	void Stiefel::ObtainExtr(Variable *x, Vector *intretax, Vector *result) const
 	{
-		if (retraction == QF || retraction == PROXSTIE || retraction == POLAR)
+		if (retraction == QF || retraction == PROXSTIE)
 			ObtainExtrHHR(x, intretax, result);
 		else
 			if (retraction == CONSTRUCTED)
@@ -433,7 +412,7 @@ namespace ROPTLIB{
 				printf("Warning: computing extrinsic representation from intrinsic has not been implemented!\n");
 	};
 
-	void Stiefel::qfRetraction(Variable *x, Vector *etax, Variable *result, double stepsize) const
+	void Stiefel::qfRetraction(Variable *x, Vector *etax, Variable *result) const
 	{
 		const double *U = x->ObtainReadData();
 		const double *V;
@@ -662,132 +641,6 @@ namespace ROPTLIB{
 		}
 	};
 
-	void Stiefel::PolarRetraction(Variable *x, Vector *etax, Variable *result, double stepsize) const
-	{
-		//std::cout << "This implementation is not efficient when p << n! In this case, we should do QR decomposition first and then apply polar decomposition on the R term." << std::endl;
-		Vector *tmp = result->ConstructEmpty();
-		if (IsIntrApproach)
-		{
-			Vector *exetax = EMPTYEXTR->ConstructEmpty();
-			ObtainExtr(x, etax, exetax);
-			VectorAddVector(x, x, exetax, tmp);
-			delete exetax;
-		}
-		else
-		{
-			VectorAddVector(x, x, etax, tmp);
-		}
-
-		double *tmpptr = tmp->ObtainWritePartialData();
-		integer c_n = n, c_p = p;
-		SharedSpace *SharedSPD = new SharedSpace(1, p * p + p);
-		double *S = SharedSPD->ObtainWriteEntireData();
-		double *VT = S + p;
-		double lworkopt = 0;
-		integer lwork = -1, info = 0;
-		integer *iwork = new integer[8 * p];
-		/*Find the optimal length of memory for computing the svd*/
-		dgesdd_(GLOBAL::O, &c_n, &c_p, tmpptr, &c_n, S, nullptr, &GLOBAL::IONE, VT, &c_p, &lworkopt, &lwork, iwork, &info);
-		lwork = static_cast<integer> (lworkopt);
-		double *work = new double[lwork];
-		/*Compute the svd for X + eta, i.e., X + eta = U S VT, U is stored in tmpptr, VT is stored in VT.*/
-		dgesdd_(GLOBAL::O, &c_n, &c_p, tmpptr, &c_n, S, nullptr, &GLOBAL::IONE, VT, &c_p, work, &lwork, iwork, &info);
-		delete[] iwork;
-		delete[] work;
-
-		double *resultptr = result->ObtainWriteEntireData();
-		/*get the result from polar retraction*/
-		dgemm_(GLOBAL::N, GLOBAL::N, &c_n, &c_p, &c_p, &GLOBAL::DONE, tmpptr, &c_n, VT, &c_p, &GLOBAL::DZERO, resultptr, &c_n);
-		delete tmp;
-
-		x->AddToTempData("SPD", SharedSPD);
-	};
-
-	void Stiefel::PolarcoTangentVector(Variable *x, Vector *etax, Variable *y, Vector *xiy, Vector *result) const
-	{
-		xiy->CopyTo(result);
-		printf("The cotangent vector for the polar retraction has not been implemented!\n");
-	};
-
-	void Stiefel::DiffPolarRetraction(Variable *x, Vector *etax, Variable *y, Vector *xix, Vector *result, bool IsEtaXiSameDir) const
-	{
-		if (IsEtaXiSameDir)
-		{
-			Vector *extempx = EMPTYEXTR->ConstructEmpty();
-			double *etaxptr = nullptr;
-			if (IsIntrApproach)
-			{
-				ObtainExtr(x, etax, extempx);
-				etaxptr = extempx->ObtainWritePartialData();
-			}
-			else
-			{
-				etax->CopyTo(extempx);
-				etaxptr = extempx->ObtainWritePartialData();
-			}
-			double alpha = sqrt(Metric(x, xix, xix) / Metric(x, etax, etax));
-
-			const SharedSpace *SharedSPD = x->ObtainReadTempData("SPD");
-			if (SharedSPD == nullptr)
-				printf("Error: SharedSPD in void Stiefel::DiffPolarRetraction does not exist!\n");
-			const double *S = SharedSPD->ObtainReadData();
-			const double *VT = S + p;
-			double *tmp = new double[n * p + p * p];
-			double *tmp2 = tmp + n * p;
-			integer c_n = n, c_p = p;
-			dgemm_(GLOBAL::N, GLOBAL::T, &c_n, &c_p, &c_p, &GLOBAL::DONE, etaxptr, &c_n, const_cast<double *> (VT), &c_p, &GLOBAL::DZERO, tmp, &c_n);
-			for (integer i = 0; i < p; i++)
-			{
-				for (integer j = 0; j < n; j++)
-				{
-					tmp[j + i * n] /= S[i];
-				}
-			}
-			dgemm_(GLOBAL::N, GLOBAL::N, &c_n, &c_p, &c_p, &GLOBAL::DONE, tmp, &c_n, const_cast<double *> (VT), &c_p, &GLOBAL::DZERO, etaxptr, &c_n);
-			dgemm_(GLOBAL::T, GLOBAL::N, &c_p, &c_p, &c_n, &GLOBAL::DONE, etaxptr, &c_n, etaxptr, &c_n, &GLOBAL::DZERO, tmp2, &c_p);
-			const double *yptr = y->ObtainReadData();
-			dgemm_(GLOBAL::N, GLOBAL::N, &c_n, &c_p, &c_p, &GLOBAL::DONE, const_cast<double *> (yptr), &c_n, tmp2, &c_p, &GLOBAL::DZERO, tmp, &c_n);
-			integer length = n * p;
-			daxpy_(&length, &GLOBAL::DNONE, tmp, &GLOBAL::IONE, etaxptr, &GLOBAL::IONE);
-			dscal_(&length, &alpha, etaxptr, &GLOBAL::IONE);
-			delete[] tmp;
-			if (IsIntrApproach)
-			{
-				ObtainIntr(y, extempx, result);
-			}
-			else
-			{
-				extempx->CopyTo(result);
-			}
-
-			if (IsEtaXiSameDir && (HasHHR || UpdBetaAlone))
-			{
-				const double *etaxTV = etax->ObtainReadData();
-				const double *xixTV = xix->ObtainReadData();
-				double EtatoXi = sqrt(Metric(x, etax, etax) / Metric(x, xix, xix));
-				SharedSpace *beta = new SharedSpace(1, 3);
-				double *betav = beta->ObtainWriteEntireData();
-				betav[0] = sqrt(Metric(x, etax, etax) / Metric(x, result, result)) / EtatoXi;
-				betav[1] = Metric(x, etax, etax);
-				betav[2] = Metric(x, result, result) * EtatoXi * EtatoXi;
-				etax->AddToTempData("beta", beta);
-
-				if (HasHHR)
-				{
-					Vector *TReta = result->ConstructEmpty();
-					result->CopyTo(TReta);
-					ScaleTimesVector(x, betav[0] * EtatoXi, TReta, TReta);
-					SharedSpace *SharedTReta = new SharedSpace(TReta);
-					etax->AddToTempData("betaTReta", SharedTReta);
-				}
-			}
-			delete extempx;
-			return;
-		}
-		printf("Warning: The differentiated retraction of the polar retraction has not been implemented!\n");
-		xix->CopyTo(result);
-	};
-
 	void Stiefel::ObtainIntrHHR(Variable *x, Vector *etax, Vector *result) const
 	{
 		if (!x->TempDataExist("HHR"))
@@ -975,7 +828,7 @@ namespace ROPTLIB{
 		delete[] work;
 	};
 
-	void Stiefel::ConRetraction(Variable *x, Vector *etax, Variable *result, double stepsize) const
+	void Stiefel::ConRetraction(Variable *x, Vector *etax, Variable *result) const
 	{ // only accept intrinsic approach
 		const double *V = nullptr;
 		Vector *inetax = EMPTYINTR->ConstructEmpty();
@@ -1147,7 +1000,7 @@ namespace ROPTLIB{
 		xix->CopyTo(result);
 	};
 
-	void Stiefel::CayleyRetraction(Variable *x, Vector *etax, Variable *result, double stepsize) const
+	void Stiefel::CayleyRetraction(Variable *x, Vector *etax, Variable *result) const
 	{//assume extrinsic representation is used for etax
 		const double *xptr = x->ObtainReadData();
 		const double *etaxptr = etax->ObtainReadData();

@@ -121,15 +121,11 @@ namespace ROPTLIB{
 	void mexProblem::ObtainElementFromMxArray(Element *X, const mxArray *Xmx)
 	{
 		// copy the main data from mxArray to X
-		mxArray *XmxA = GetFieldbyName(Xmx, 0, "main");
+		double *Xmxptr = mxGetPr(GetFieldbyName(Xmx, 0, "main"));
+		integer lengthX = X->Getlength();
 		integer inc = 1;
-		if (XmxA != nullptr)
-		{
-			double *Xmxptr = mxGetPr(XmxA);
-			integer lengthX = X->Getlength();
-			double *Xptr = X->ObtainWriteEntireData();
-			dcopy_(&lengthX, Xmxptr, &inc, Xptr, &inc);
-		}
+		double *Xptr = X->ObtainWriteEntireData();
+		dcopy_(&lengthX, Xmxptr, &inc, Xptr, &inc);
 
 		// copy temp data from mxArray to X
 		integer nfields = mxGetNumberOfFields(Xmx);

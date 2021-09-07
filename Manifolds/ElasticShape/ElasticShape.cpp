@@ -62,7 +62,7 @@ namespace ROPTLIB{
     };
 
 
-    void ElasticShape::Retraction(Variable *x, Vector *etax, Variable *result, double stepsize) const
+    void ElasticShape::Retraction(Variable *x, Vector *etax, Variable *result) const
     {
         const double *Curve_x = x->ObtainReadData();
         const double *direc = etax->ObtainReadData();

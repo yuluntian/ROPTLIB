@@ -37,6 +37,10 @@ This is the test file to run the problem defined in WeightedLowRank.h and Weight
 
 using namespace ROPTLIB;
 
+#if !defined(MATLAB_MEX_FILE) && defined(TESTWEIGHTEDLOWRANK)
+int main(void);
+#endif
+
 void testWeightedLowRank(void);
 
 #endif

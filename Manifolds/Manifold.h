@@ -14,9 +14,6 @@ Manifold
 #ifndef MANIFOLD_H
 #define MANIFOLD_H
 
-/*Variable and Vector are just Element*/
-#define Variable Element
-#define Vector Element
 
 //#include <cmath>
 
@@ -108,6 +105,10 @@ namespace ROPTLIB{
 		/*Compute the retraction result = R_x(etax). A stepsize is also input for information.
 		Default: result = x + etax;*/
 		virtual void Retraction(Variable *x, Vector *etax, Variable *result, double instepsize) const;
+
+		/*Compute the retraction result = R_x(etax).
+		Default: result = x + etax;*/
+		virtual void Retraction(Variable *x, Vector *etax, Variable *result) const;
 
 		/*Compute the tangent vector result satisfying
 			g_y(\mathcal{T}_{R_etax}(xix), xiy) = g_x(xix, result) for all xix \in T_x M,

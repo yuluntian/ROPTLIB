@@ -36,15 +36,19 @@ namespace ROPTLIB{
 		/*Setting parameters (member variables) to be default values */
 		virtual void SetDefaultParams();
 
-        /*Return the trust region radius */
-        double getDelta() {return Delta; }
+		/*Return the trust region radius */
+		double getDelta() {return Delta; }
 
-        /*Return tCG status*/
-        tCGstatusSet gettCGStatus() {return tCGstatus; }
-
-     protected:
+		/*Return tCG status*/
+		tCGstatusSet gettCGStatus() {return tCGstatus; }
+		bool latestStepAccepted() {return latestStepAccepted_; }
+	protected:
 		/*Compute result = H[Eta], where H is the Hessian*/
 		virtual void HessianEta(Vector *Eta, Vector *result);
+
+		/*Compute result = Precon[Eta], where Precon is a preconditioner for the
+		Hessian H, i.e. Precon[ H[Eta] ] \approx Id*/
+		virtual void PreConditioner(Variable *x, Vector *Eta, Vector *result);
 	};
 }; /*end of ROPTLIB namespace*/
 

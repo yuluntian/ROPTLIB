@@ -42,7 +42,10 @@ i.e., \min_{x \in S^{n - 1}) x^T B x.
 
 using namespace ROPTLIB;
 
-void testSphereRayQuo(void);
+#if !defined(MATLAB_MEX_FILE) && defined(TESTSPHERERAYQUO)
+int main(void);
+#endif
+
 void testSphereRayQuo(double *B, double *D, integer n, double *X = nullptr, double *Xopt = nullptr);
 
 #endif // end of TESTSPHERERAYQUO_H

@@ -1,4 +1,4 @@
-﻿/*
+/*
 This is the global head file. Every file in ROPTLIB will include this file.
 
 ---- WH
@@ -10,15 +10,13 @@ This is the global head file. Every file in ROPTLIB will include this file.
 //#define MATLAB_MEX_FILE//For debug---
 //#define DRIVERJULIAPROB//For debug---
 
-//#define ROPTLIB_WITH_FFTW
-
 /* 
 If all the test files are included in a project, then only uncomment one of them to specify which test problem is run.
 */
 
 //#define TESTEUCFRECHETMEAN
 //#define TESTEUCQUADRATIC
-//#define TESTPRODUCT
+#define TESTPRODUCT
 //#define TESTSPHERERAYQUO
 //#define TESTSTIEBROCKETT
 //#define TESTSTIESPARSEBROCKETT
@@ -38,18 +36,12 @@ If all the test files are included in a project, then only uncomment one of them
 //#define TESTORTHBOUNDINGBOX
 //#define TESTKARCHERMEAN
 //#define TESTLRMATRIXCOMPLETION
-//#define TESTLRBLINDDECONVOLUTION
-//#define TESTEUCBLINDDECONVOLUTION
-//#define TESTCFR2BLINDDECONVOLUTION
-//#define TESTCFR2BLINDDECON2D
-//#define TESTCFR2BLINDDECON3D
-//#define TESTCSOPHASERETRIEVAL
-//#define TESTSPHERESPARSESTVECTOR
 
-//#define TESTSIMPLEEXAMPLE
-//#define TESTPRODUCTEXAMPLE
+#define TESTSIMPLEEXAMPLE
+#define TESTPRODUCTEXAMPLE
 
 #include <cmath>
+
 
 /*std library*/
 #include <cstdio>
@@ -105,8 +97,6 @@ are included.*/
 	#include <zpotrs.h>
 	#include <zgetrs.h>
 	#include <zpotrf.h>
-	#include <zpotri.h>
-	#include <zgesvd.h>
 #endif // end of ifndef MATLAB_MEX_FILE
 
 #ifdef _WIN64 // The following code is compiled only when this library is compiled in Windows (64-bit only)
@@ -218,8 +208,6 @@ are included.*/
 #define zpotrs_ zpotrs
 #define zgetrs_ zgetrs
 #define zpotrf_ zpotrf
-#define zpotri_ zpotri
-#define zgesvd_ zgesvd
 #endif // end of ifdef MATLAB_MEX_FILE
 
 /*Help to debug the code*/

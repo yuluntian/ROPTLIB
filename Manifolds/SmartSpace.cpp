@@ -103,13 +103,7 @@ namespace ROPTLIB{
 		{
 			integer N = length, inc = 1;
 			// (eta->Space) <- Space, details: http://www.netlib.org/lapack/explore-html/da/d6c/dcopy_8f.html
-             if(Space != nullptr)
-                dcopy_(&N, Space, &inc, eta->Space, &inc);
-             else
-             {
- 				delete eta->sharedtimes; eta->sharedtimes = nullptr;
- 				delete[] eta->Space; eta->Space = nullptr;
-             }
+			dcopy_(&N, Space, &inc, eta->Space, &inc);
 			return;
 		}
 

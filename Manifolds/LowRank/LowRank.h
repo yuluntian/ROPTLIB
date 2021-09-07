@@ -49,7 +49,6 @@ namespace ROPTLIB{
 		~LowRank(void);
 
 		/*Riemannian metric*/
-		//virtual double Metric(Variable *x, Vector *etax, Vector *xix) const;
 		virtual double ExtrMetric(Variable *x, Vector *etax, Vector *xix) const;
 
 		/*Tangent vector etax = \dot(U) D V^T + U \dot{D} V^T + U D \dot{V}^T. Let \dot{U} = U_perp K_U and \dot{V} = V_perp K_V
@@ -62,7 +61,7 @@ namespace ROPTLIB{
 		virtual void ObtainExtr(Variable *x, Vector *intretax, Vector *result) const;
 
 		/*Perform the default retraction of each manifold component*/
-		virtual void Retraction(Variable *x, Vector *etax, Variable *result, double stepsize) const;
+		virtual void Retraction(Variable *x, Vector *etax, Variable *result) const;
 
 		/*Compute the tangent vector result satisfying
 		g_y(\mathcal{T}_{R_etax}(xix), xiy) = g_x(xix, result) for all xix \in T_x M,
@@ -98,14 +97,6 @@ namespace ROPTLIB{
 		
 		/*Compute the LU decomposition of x*/
 		void LUofDinx(Variable *x) const;
-
-		/*M is in Euclidean representation. This function computes extrinsic representation when 
-		M^T U and M V are computed*/
-		void MTUMVtoExtr(Variable *x, double *MtU, double *MV, integer m, integer n, integer r, Vector *result) const;
-
-		/*This is used in EucHvToHv */
-		void MTdUMdVtoExtr(Variable *x, double *MTdU, double *MdV, integer mm, integer nn, integer rr, Vector* xix) const;
-
 	protected:
 		integer m; /*the number of row*/
 		integer n; /*the number of column*/
