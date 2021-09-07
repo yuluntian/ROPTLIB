@@ -81,6 +81,7 @@ namespace ROPTLIB{
 					PrintInfo(); // Output information specific to Algorithms
 				}
 				f1 = f2;
+				latestStepAccepted_ = true;
 			}
 			else
 			{
@@ -91,6 +92,7 @@ namespace ROPTLIB{
 					PrintGenInfo();
 					PrintInfo(); // Output information specific to Algorithms
 				}
+				latestStepAccepted_ = false;
 			}
 
 			if (Debug >= ITERRESULT)

@@ -37,6 +37,8 @@ namespace ROPTLIB{
 		This function is used to set the parameters by the mapping*/
 		virtual void SetParams(PARAMSMAP params);
 
+		bool latestStepAccepted() {return latestStepAccepted_; }
+
 		/* ===============public parameters below================= */
 
 		/*if the difference between the local model and the true function is greater than "Acceptence_Rho",
@@ -127,6 +129,7 @@ namespace ROPTLIB{
 		integer innerIter;	/*The number of inner iterations for solving the local model.*/
 		tCGstatusSet tCGstatus; /*The status of solving the local model*/
 		std::string *tCGstatusSetnames;	/*This string array is to store the trust region status names*/
+		bool latestStepAccepted_ = false;
 	};
 }; /*end of ROPTLIB namespace*/
 #endif
